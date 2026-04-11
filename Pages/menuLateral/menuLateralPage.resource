@@ -1,5 +1,4 @@
 *** Settings ***
-Library    SeleniumLibrary
 Resource    ../Resources/base.resource
 
 *** Variables ***

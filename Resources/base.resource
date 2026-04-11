@@ -1,5 +1,8 @@
 *** Settings ***
 Library    SeleniumLibrary
+Library    FakerLibrary    locale=pt_BR
+Library    String
+Library    Process
 
 *** Variables ***
 
@@ -38,7 +41,7 @@ Usuário acessa página do desafio
 Aciona elemento
     [Arguments]    ${ELEMENT}
     Log To Console                               ...Clicando no elemento: ${ELEMENT}...
-    Wait Until Element Is Visible                ${ELEMENT}               ${SMALL_TIMEOUT}
+    Valida elemento em tela                      ${ELEMENT}               
     Click Element                                ${ELEMENT}
 
 Valida texto em tela
@@ -100,3 +103,16 @@ Valida cor de fundo
     ${backgroundColor}    Execute Javascript    return window.getComputedStyle(document.querySelector('${selector}')).backgroundColor;
     Run Keyword And Continue On Failure          
     ...    Should Be Equal    ${backgroundColor}    ${cor}    msg=...COR DE FUNDO DIFERENTE DO PROTÓTIPO! PROTÓTIPO: ${cor}, COR ATUAL: ${backgroundColor}!!!...    values=False
+
+Digita texto
+    [Arguments]    ${ELEMENT}    ${TEXTO}
+    Log To Console                               ...Digitando o texto "${TEXTO}" no elemento: ${ELEMENT}...
+    Wait Until Element Is Visible                ${ELEMENT}               ${SMALL_TIMEOUT}
+    Input Text                                   ${ELEMENT}               ${TEXTO}
+
+Seleciona combobox
+    [Arguments]    ${ELEMENT}    ${OPCAO}    ${NOME_OPCAO}
+    Aciona elemento                              ${ELEMENT} 
+    Aciona elemento                              ${OPCAO}
+    ${OPCAO_SELECIONADA}    Get Element Attribute            ${OPCAO}    title
+    Set Suite Variable    ${NOME_OPCAO}
