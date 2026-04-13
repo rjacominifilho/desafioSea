@@ -10,7 +10,7 @@ CT-CAD-FUNC-001 - Cadastro de Funcionário Ativo Sem EPI e Sem Arquivo
     Given Usuário acessa página do desafio       
     When Acessa o Item 2 do Menu Lateral         ${BUILDING_MENU}
     And Realiza cadastro de funcionário ativo sem EPI e sem arquivo
-    # Then Card do Funcionário é exibido na tela
+    Then Card do Funcionário é exibido na tela
 
 CT-CAD-FUNC-002 - Cadastro de Funcionário Ativo Com EPI e Sem Arquivo
     [Documentation]    ...CT-CAD-FUNC-002 - Validar cadastro de funcionário ativo com EPI e sem arquivo...

@@ -68,6 +68,16 @@ Inicializar Variáveis com dados aleatórios
 ########################################################################
 ####################        DADOS PESSOAIS          ####################
 ########################################################################
+Informa data nascimento
+    IF    '${BROWSER}' != 'chrome'
+        Click Element    ${CAMPO_DATA_NASCIMENTO}
+        ${dia}    Set Variable   ${nascimento}[0:2]  
+        ${mes}    Set Variable   ${nascimento}[2:4]  
+        ${ano}    Set Variable   ${nascimento}[4:]  
+        Press Keys     ${CAMPO_DATA_NASCIMENTO}   ${dia}+${mes}+${ano}
+    ELSE
+        Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+    END
 Informa dados pessoais
     [Arguments]    ${STATUS}
     Log To Console                               ...Informando dados pessoais do funcionário...
@@ -86,15 +96,7 @@ Informa dados pessoais
         Aciona elemento                          ${SEXO_FEMININO}
     END
     Digita texto                                 ${CAMPO_CPF}                  ${cpf_formatado}
-    IF    '${BROWSER}' != 'chrome'
-        Click Element    ${CAMPO_DATA_NASCIMENTO}
-        ${dia}    Set Variable   ${nascimento}[0:2]  
-        ${mes}    Set Variable   ${nascimento}[2:4]  
-        ${ano}    Set Variable   ${nascimento}[4:]  
-        Press Keys     ${CAMPO_DATA_NASCIMENTO}   ${dia}+${mes}+${ano}
-    ELSE
-        Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
-    END
+    Informa data nascimento
     Digita texto                                 ${CAMPO_RG}                   ${rg}
     Log To Console                               ...Dados pessoais informados com sucesso!...
 
@@ -127,7 +129,7 @@ Informa CA do EPI
 ########################################################################
 Anexa atestado de saúde ocupacional
     Log To Console                               ...Upload de atestado de saúde ocupacional...
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Choose File                                  ${BOTAO_SELECIONAR_ARQUIVO}    ${EXECDIR}/Utils/ASO.pdf
     Log To Console                               ...Atestado de saúde ocupacional anexado com sucesso!...
     
@@ -141,13 +143,13 @@ Validação Card Funcionário
         Reload Page     
         Sleep                                        2s
         ${quantidade}    Execute Javascript    return document.querySelectorAll('.c-bXqUbA').length;
-        Scroll Element Into View                     //div[@class="c-bXqUbA"][${quantidade}]
+        Set Focus To Element                         //div[@class="c-bXqUbA"][${quantidade}]
         Valida elemento em tela                      //div[@class="c-bXqUbA"][${quantidade}]/span[contains(text(),'${nome}')]
         Sleep                                        1
         Valida elemento em tela                      //div[@class="c-bXqUbA"][${quantidade}]//div[contains(text(),'${cpf}')]
         Valida elemento em tela                      //div[@class="c-bXqUbA"][${quantidade}]//div[contains(text(),'${cargo}')]
         Execute Javascript                           Array.from(document.querySelectorAll('div.c-bXqUbA span')).find(el => el.textContent.includes('${nome}')).style.border='4px solid red'
-        Capture Page Screenshot                      funcionario(${quantidade}).png
+        Capture Element Screenshot                   //div[@class="c-bXqUbA"][${quantidade}]    funcionario(${quantidade}).png
     ELSE
         Log To Console                               ...Validando exibição do card do funcionário cadastrado na tela...      
         Valida texto em tela                         Funcionário(s)
@@ -160,8 +162,7 @@ Validação Card Funcionário
         Valida elemento em tela                      //div[@class="c-bXqUbA"][${quantidade}]//div[contains(text(),'${cargo}')]
         Valida elemento em tela                      //div[@class="c-bXqUbA"][${quantidade}]//div[contains(text(),'${atividade}')]
         Execute Javascript                           Array.from(document.querySelectorAll('div.c-bXqUbA span')).find(el => el.textContent.includes('${nome}')).style.border='4px solid red'
-        Capture Page Screenshot                      funcionario(${quantidade}).png
-
+        Capture Element Screenshot                   //div[@class="c-bXqUbA"][${quantidade}]    funcionario(${quantidade}).png
     END
 
 Validação Card Funcionário CPF Inválido
@@ -170,19 +171,19 @@ Validação Card Funcionário CPF Inválido
     Reload Page     
     Sleep                                        2s
     ${quantidade}    Execute Javascript    return document.querySelectorAll('.c-bXqUbA').length;
-    Scroll Element Into View                     //div[@class="c-bXqUbA"][${quantidade}]
+    Set Focus To Element                         //div[@class="c-bXqUbA"][${quantidade}]
     Valida elemento em tela                      //div[@class="c-bXqUbA"][${quantidade}]/span[contains(text(),'${nome}')]
     Sleep                                        1
     ${teste}    Run Keyword And Return Status    Wait Until Page Contains Element    //div[@class="c-bXqUbA"][${quantidade}]//div[contains(text(),'${cpf_invalido}')]    ${SMALL_TIMEOUT}
     IF    ${teste}
         Execute Javascript                           Array.from(document.querySelectorAll('.c-iYbcAK')).findLast(el => el.textContent.includes('${cpf_invalido}')).style.border='4px solid red';
-        Capture Page Screenshot                      funcionario(${quantidade})-cpfInválido.png
+        Capture Element Screenshot                   //div[@class="c-bXqUbA"][${quantidade}]    funcionario(${quantidade})-cpfInválido.png
         Fail                                         FUNCIONÁRIO CADASTRADO COM CPF INVÁLIDO!!!
     END
     ${teste}    Run Keyword And Return Status    Wait Until Page Contains Element    //div[@class="c-bXqUbA"][${quantidade}]//div[contains(text(),'${cpf_texto}')]    ${SMALL_TIMEOUT}
     IF    ${teste}
         Execute Javascript                           Array.from(document.querySelectorAll('.c-iYbcAK')).findLast(el => el.textContent.includes('${cpf_texto}')).style.border='4px solid red';
-        Capture Page Screenshot                      funcionario(${quantidade})-cpfInválido.png
+        Capture Element Screenshot                   //div[@class="c-bXqUbA"][${quantidade}]    funcionario(${quantidade})-cpfInválido.png
         Fail                                         FUNCIONÁRIO CADASTRADO COM CPF INVÁLIDO!!!
     END
     
@@ -192,12 +193,11 @@ Validação Card Funcionário CPF texto
     Reload Page     
     Sleep                                        2s
     ${quantidade}    Execute Javascript    return document.querySelectorAll('.c-bXqUbA').length;
-    Scroll Element Into View                     //div[@class="c-bXqUbA"][${quantidade}]
+    Set Focus To Element                         //div[@class="c-bXqUbA"][${quantidade}]
     Valida elemento em tela                      //div[@class="c-bXqUbA"][${quantidade}]/span[contains(text(),'${nome}')]
-    Sleep                                        1
     Valida elemento em tela                      //div[@class="c-bXqUbA"][${quantidade}]//div[contains(text(),'abcdefghijk')]
     Execute Javascript                           Array.from(document.querySelectorAll('.c-iYbcAK')).findLast(el => el.textContent.includes('abcdefghijk')).style.border='4px solid red';
-    Capture Page Screenshot                      funcionario(${quantidade})-cpfInválido.png
+    Capture Element Screenshot                   //div[@class="c-bXqUbA"][${quantidade}]    funcionario(${quantidade})-cpfInválido.png
     Fail                                         FUNCIONÁRIO CADASTRADO COM CPF INVÁLIDO!!!
     
 ########################################################################
@@ -209,11 +209,11 @@ Realiza cadastro de funcionário ativo sem EPI e sem arquivo
     Log To Console                               ...Realizando cadastro de funcionário ativo sem EPI...
     Acessa tela de cadastro de funcionário
     Informa dados pessoais    Ativo
-    # Seleciona Cargo
-    # ###MARCANDO OPÇÃO DE FUNCIONÁRIO SEM EPI###
-    # Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
-    # Set Focus To Element                         ${BOTAO_SALVAR}
-    # Aciona elemento                              ${BOTAO_SALVAR}
+    Seleciona Cargo
+    ###MARCANDO OPÇÃO DE FUNCIONÁRIO SEM EPI###
+    Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
+    Set Focus To Element                         ${BOTAO_SALVAR}
+    Aciona elemento                              ${BOTAO_SALVAR}
 
 Realiza cadastro de funcionário ativo com EPI e sem arquivo
     Log To Console                               ...Realizando cadastro de funcionário ativo com EPI e sem arquivo...
@@ -223,7 +223,7 @@ Realiza cadastro de funcionário ativo com EPI e sem arquivo
     Seleciona Atividade
     Seleciona EPI
     Informa CA do EPI
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
 
 Realiza cadastro de funcionário ativo sem EPI e com arquivo
@@ -234,7 +234,7 @@ Realiza cadastro de funcionário ativo sem EPI e com arquivo
     ###MARCANDO OPÇÃO DE FUNCIONÁRIO SEM EPI###
     Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
     Anexa atestado de saúde ocupacional
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
 
 Realiza cadastro de funcionário ativo com EPI e com arquivo
@@ -246,7 +246,7 @@ Realiza cadastro de funcionário ativo com EPI e com arquivo
     Seleciona EPI
     Informa CA do EPI
     Anexa atestado de saúde ocupacional
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
 
 ###USUÁRIO INATIVO###
@@ -257,7 +257,7 @@ Realiza cadastro de funcionário inativo sem EPI e sem arquivo
     Seleciona Cargo
     ###MARCANDO OPÇÃO DE FUNCIONÁRIO SEM EPI###
     Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
 
 Realiza cadastro de funcionário inativo com EPI e sem arquivo
@@ -268,7 +268,7 @@ Realiza cadastro de funcionário inativo com EPI e sem arquivo
     Seleciona Atividade
     Seleciona EPI
     Informa CA do EPI
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
 
 Realiza cadastro de funcionário inativo sem EPI e com arquivo
@@ -279,7 +279,7 @@ Realiza cadastro de funcionário inativo sem EPI e com arquivo
     ###MARCANDO OPÇÃO DE FUNCIONÁRIO SEM EPI###
     Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
     Anexa atestado de saúde ocupacional
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
 
 Realiza cadastro de funcionário inativo com EPI e com arquivo
@@ -291,7 +291,7 @@ Realiza cadastro de funcionário inativo com EPI e com arquivo
     Seleciona EPI
     Informa CA do EPI
     Anexa atestado de saúde ocupacional
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
     
 ########################################################################
@@ -306,7 +306,7 @@ Card do Funcionário é exibido na tela
 Realiza cadastro de funcionário sem preencher nenhum campo
     Log To Console                              ...Realizando tentativa de cadastro de funcionário sem preencher nenhum campo...
     Acessa tela de cadastro de funcionário
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
     Sleep                                        1
 
@@ -317,18 +317,18 @@ Realiza cadastro de funcionário sem preencher campo
     Acessa tela de cadastro de funcionário
     IF    '${CAMPO}' == 'Nome'
         Digita texto                                 ${CAMPO_CPF}                  ${cpf_formatado}
-        Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+        Informa data nascimento
         Digita texto                                 ${CAMPO_RG}                   ${rg}
         Digita texto                                 ${CAMPO_CA_EPI}               ${caEPI}
-        Scroll Element Into View                     ${BOTAO_SALVAR}
+        Set Focus To Element                         ${BOTAO_SALVAR}
         Aciona elemento                              ${BOTAO_SALVAR}
         Sleep                                        1
     ELSE IF    '${CAMPO}' == 'CPF'
         Digita texto                                 ${CAMPO_NOME}                 ${nome}
-        Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+        Informa data nascimento
         Digita texto                                 ${CAMPO_RG}                   ${rg}
         Digita texto                                 ${CAMPO_CA_EPI}               ${caEPI}
-        Scroll Element Into View                     ${BOTAO_SALVAR}
+        Set Focus To Element                         ${BOTAO_SALVAR}
         Aciona elemento                              ${BOTAO_SALVAR}
         Sleep                                        1
     ELSE IF    '${CAMPO}' == 'Data de Nascimento'
@@ -336,23 +336,23 @@ Realiza cadastro de funcionário sem preencher campo
         Digita texto                                 ${CAMPO_CPF}                  ${cpf_formatado}
         Digita texto                                 ${CAMPO_RG}                   ${rg}
         Digita texto                                 ${CAMPO_CA_EPI}               ${caEPI}
-        Scroll Element Into View                     ${BOTAO_SALVAR}
+        Set Focus To Element                         ${BOTAO_SALVAR}
         Aciona elemento                              ${BOTAO_SALVAR}
         Sleep                                        1
     ELSE IF    '${CAMPO}' == 'RG' 
         Digita texto                                 ${CAMPO_NOME}                 ${nome}
         Digita texto                                 ${CAMPO_CPF}                  ${cpf_formatado}
-        Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+        Informa data nascimento
         Digita texto                                 ${CAMPO_CA_EPI}               ${caEPI}
-        Scroll Element Into View                     ${BOTAO_SALVAR}
+        Set Focus To Element                         ${BOTAO_SALVAR}
         Aciona elemento                              ${BOTAO_SALVAR}
         Sleep                                        1
     ELSE IF    '${CAMPO}' == 'CA do EPI'
         Digita texto                                 ${CAMPO_NOME}                 ${nome}
         Digita texto                                 ${CAMPO_CPF}                  ${cpf_formatado}
-        Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+        Informa data nascimento
         Digita texto                                 ${CAMPO_RG}                   ${rg}
-        Scroll Element Into View                     ${BOTAO_SALVAR}
+        Set Focus To Element                         ${BOTAO_SALVAR}
         Aciona elemento                              ${BOTAO_SALVAR}
         Sleep                                        1
     END       
@@ -363,9 +363,17 @@ Mensagem de campos obrigatórios é exibida na tela
     ${CAMPO}    Remove String    ${CAMPO}     css:
     Log To Console                               ...Validando mensagem de campos obrigatórios...    
     ${mensagem}    Execute Javascript    return document.querySelector('${CAMPO}').validationMessage;
-    Should Be Equal As Strings    ${mensagem}    Please fill out this field.    msg=...MENSAGEM DE CAMPO OBRIGATÓRIO DIFERENTE DO PROTÓTIPO!!! PROTÓTIPO: Please fill out this field., MENSAGEM ATUAL: ${mensagem}!!!...
-    Capture Page Screenshot                      validaçãoCampoObrigatorio-${NOME}.png
-    Log To Console                               ...Mensagem de campos obrigatórios validada com sucesso!...
+    IF    '${BROWSER}' == 'firefox'
+        Should Be Equal As Strings    ${mensagem}    Please fill in this field.    msg=...MENSAGEM DE CAMPO OBRIGATÓRIO DIFERENTE DO PROTÓTIPO!!! PROTÓTIPO: Please fill out this field., MENSAGEM ATUAL: ${mensagem}!!!...
+        Capture Page Screenshot                      validaçãoCampoObrigatorio-${NOME}.png
+        Log To Console                               ...Mensagem de campos obrigatórios validada com sucesso!...
+    ELSE IF    '${BROWSER}' == 'chrome'
+        Should Be Equal As Strings    ${mensagem}    Please fill out this field.    msg=...MENSAGEM DE CAMPO OBRIGATÓRIO DIFERENTE DO PROTÓTIPO!!! PROTÓTIPO: Please fill out this field., MENSAGEM ATUAL: ${mensagem}!!!...
+        Capture Page Screenshot                      validaçãoCampoObrigatorio-${NOME}.png
+        Log To Console                               ...Mensagem de campos obrigatórios validada com sucesso!...
+    END
+    
+    
 
 ########################################################################
 ###############              VALIDAÇÃO CPF                ##############
@@ -385,10 +393,10 @@ Realiza cadastro de funcionário com CPF inválido
     ${cpf_invalido}    Remove String    ${cpf_invalido}    .
     ${cpf_invalido}    Remove String    ${cpf_invalido}    -
     Digita texto                                 ${CAMPO_CPF}                  ${cpf_invalido}
-    Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+    Informa data nascimento
     Digita texto                                 ${CAMPO_RG}                   ${rg}
     Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
     Sleep                                        1
 
@@ -405,10 +413,10 @@ Realiza cadastro de funcionário com CPF texto
         Aciona elemento                          ${SEXO_FEMININO}
     END
     Digita texto                                 ${CAMPO_CPF}                  ${cpf_texto}
-    Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+    Informa data nascimento
     Digita texto                                 ${CAMPO_RG}                   ${rg}
     Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
-    Scroll Element Into View                     ${BOTAO_SALVAR}
+    Set Focus To Element                         ${BOTAO_SALVAR}
     Aciona elemento                              ${BOTAO_SALVAR}
     Sleep                                        1
 

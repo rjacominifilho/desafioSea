@@ -108,9 +108,17 @@ O projeto segue o padrão **Page Object Model (POM)** para melhor manutenibilida
 
 ### Executar Todos os Testes (Chrome e Firefox)
 
+**macOS/Linux:**
 ```bash
 ./executar_testes.sh
 ```
+
+**Windows:**
+```cmd
+executar_testes.bat
+```
+
+Ou simplesmente clique duas vezes no arquivo `executar_testes.bat`.
 
 ### Executar Testes em um Navegador Específico
 
