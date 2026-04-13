@@ -2,9 +2,11 @@
 Resource    ../menuLateral/menuLateralPage.resource
 
 *** Variables ***
+###STATUS DO CADASTRO###
 ${BOTAO_ATIVO_INATIVO}            //span[@class="ant-switch-inner"]
 ${BOTAO_ATIVO_SELECIONADO}        //span[@class="ant-switch-inner-checked"]
 ${BOTAO_INATIVO_SELECIONADO}      //span[@class="ant-switch-inner-unchecked"]
+###DADOS PESSOAIS###
 ${CAMPO_NOME}                     css:input[name="name"] 
 ${nome}                                                
 ${SELETOR_SEXO}                   //div[@class="ant-radio-group ant-radio-group-outline radioGroup css-2uw1qp"]
@@ -23,6 +25,8 @@ ${rg}
 ${CAMPO_CARGO}                    //*[contains(text(), 'Cargo 01')]
 ${CARGO_SELECIONAR}               //div[@title="Cargo 02"]
 ${cargo}
+###ATIVIDADE E EPI###
+${BOTAO_TRABALHA_COM_EPI}         //span[contains(text(),"O trabalhador não usa EPI.")]
 ${CAMPO_ATIVIDADE}                //*[contains(text(), 'Ativid 01')]
 ${ATIVIDADE_SELECIONAR}           //div[@title="Ativid 02"]
 ${atividade}
@@ -31,8 +35,9 @@ ${EPI_SELECIONAR}                 //div[@title="Óculos de proteção"]
 ${epi}
 ${CAMPO_CA_EPI}                   css:input[name="caNumber"]
 ${caEPI}                          123456789
+###ENVIO DE ARQUIVO###
 ${BOTAO_SELECIONAR_ARQUIVO}       //input[@type="file"]
-${BOTAO_TRABALHA_COM_EPI}         //span[contains(text(),"O trabalhador não usa EPI.")]
+###SUBMIT CADASTRO###
 ${BOTAO_SALVAR}                   //button[@type="submit"]
 
 
@@ -81,7 +86,15 @@ Informa dados pessoais
         Aciona elemento                          ${SEXO_FEMININO}
     END
     Digita texto                                 ${CAMPO_CPF}                  ${cpf_formatado}
-    Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+    IF    '${BROWSER}' != 'chrome'
+        Click Element    ${CAMPO_DATA_NASCIMENTO}
+        ${dia}    Set Variable   ${nascimento}[0:2]  
+        ${mes}    Set Variable   ${nascimento}[2:4]  
+        ${ano}    Set Variable   ${nascimento}[4:]  
+        Press Keys     ${CAMPO_DATA_NASCIMENTO}   ${dia}+${mes}+${ano}
+    ELSE
+        Digita texto                                 ${CAMPO_DATA_NASCIMENTO}      ${nascimento}
+    END
     Digita texto                                 ${CAMPO_RG}                   ${rg}
     Log To Console                               ...Dados pessoais informados com sucesso!...
 
@@ -118,7 +131,6 @@ Anexa atestado de saúde ocupacional
     Choose File                                  ${BOTAO_SELECIONAR_ARQUIVO}    ${EXECDIR}/Utils/ASO.pdf
     Log To Console                               ...Atestado de saúde ocupacional anexado com sucesso!...
     
-
 ########################################################################
 ####################        VALIDAÇÃO CARD          ####################
 ########################################################################
@@ -174,7 +186,6 @@ Validação Card Funcionário CPF Inválido
         Fail                                         FUNCIONÁRIO CADASTRADO COM CPF INVÁLIDO!!!
     END
     
-
 Validação Card Funcionário CPF texto
     Log To Console                               ...Validando exibição do card do funcionário cadastrado com CPF com texto...      
     Valida texto em tela                         Funcionário(s)
@@ -198,11 +209,11 @@ Realiza cadastro de funcionário ativo sem EPI e sem arquivo
     Log To Console                               ...Realizando cadastro de funcionário ativo sem EPI...
     Acessa tela de cadastro de funcionário
     Informa dados pessoais    Ativo
-    Seleciona Cargo
-    ###MARCANDO OPÇÃO DE FUNCIONÁRIO SEM EPI###
-    Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
-    Scroll Element Into View                     ${BOTAO_SALVAR}
-    Aciona elemento                              ${BOTAO_SALVAR}
+    # Seleciona Cargo
+    # ###MARCANDO OPÇÃO DE FUNCIONÁRIO SEM EPI###
+    # Aciona elemento                              ${BOTAO_TRABALHA_COM_EPI}
+    # Set Focus To Element                         ${BOTAO_SALVAR}
+    # Aciona elemento                              ${BOTAO_SALVAR}
 
 Realiza cadastro de funcionário ativo com EPI e sem arquivo
     Log To Console                               ...Realizando cadastro de funcionário ativo com EPI e sem arquivo...
@@ -413,5 +424,3 @@ Mensagem de CPF inválido é apresentada
         Capture Page Screenshot                      validaçãoCampoObrigatorio-${NOME}.png
         Log To Console                               ...Mensagem de CPF inválido validada com sucesso!...
     END
-    
-    
