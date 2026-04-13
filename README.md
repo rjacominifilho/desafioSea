@@ -175,6 +175,17 @@ xdg-open results/report.html    # Linux
 start results\report.html       # Windows
 ```
 
+### ⚠️ Nota Importante sobre a Pasta `results/`
+
+A pasta `results/` foi **adicionada ao repositório do Git apenas para fins didáticos**, para que você possa visualizar exemplos de relatórios gerados. Em um projeto real, essa pasta deveria estar no `.gitignore` para evitar adicionar arquivos de saída ao controle de versão.
+
+Se desejar remover essa pasta do Git e adicionar ao `.gitignore`, execute:
+```bash
+git rm -r --cached results/
+echo "results/" >> .gitignore
+git commit -m "Remove results folder from git tracking"
+```
+
 ---
 
 ## 🔧 Configurações Importantes
