@@ -2,7 +2,6 @@
 Library    SeleniumLibrary
 Library    FakerLibrary    locale=pt_BR
 Library    String
-Library    Process
 
 *** Variables ***
 
@@ -17,6 +16,7 @@ ${LARGE_TIMEOUT}        30s
 ###################    CONNECTION  ###################
 ######################################################
 ${URL}                  http://analista-teste.seatecnologia.com.br/
+${BROWSER}              firefox
 
 ######################################################
 #################    MENU LATERAL    #################
@@ -29,8 +29,10 @@ ${HISTORY_MENU}         //img[@src="/assets/history-9102babe.svg"]
 ${PERSON_MENU}          //img[@src="/assets/person-bde031c5.svg"]
 
 *** Keywords ***
+######################################################
+#################    ACESSA DESAFIO    ###############
+######################################################
 Usuário acessa página do desafio
-    [Arguments]    ${BROWSER}
     Log To Console                               \n...Acessando a página do desafio...   
     Open Browser                                 ${URL}                   ${BROWSER}
     Maximize Browser Window
@@ -38,12 +40,38 @@ Usuário acessa página do desafio
     Wait Until Page Contains                     Funcionário(s)           ${SMALL_TIMEOUT}
     Log To Console                               ...Página do desafio acessada com sucesso!...
 
+######################################################
+#################    EXIBINDO TELAS    ###############
+######################################################
+Tela "Em breve" é exibida
+    Log To Console                               ...Validando exibição da tela "Em breve"...
+    Valida texto em tela                         Em breve
+
+######################################################
+##############    MANUPULANDO ELEMENTOS   ############
+######################################################
 Aciona elemento
     [Arguments]    ${ELEMENT}
     Log To Console                               ...Clicando no elemento: ${ELEMENT}...
     Valida elemento em tela                      ${ELEMENT}               
     Click Element                                ${ELEMENT}
 
+Digita texto
+    [Arguments]    ${ELEMENT}    ${TEXTO}
+    Log To Console                               ...Digitando o texto "${TEXTO}" no elemento: ${ELEMENT}...
+    Wait Until Element Is Visible                ${ELEMENT}               ${SMALL_TIMEOUT}
+    Input Text                                   ${ELEMENT}               ${TEXTO}
+
+Seleciona combobox
+    [Arguments]    ${ELEMENT}    ${OPCAO}    ${NOME_OPCAO}
+    Aciona elemento                              ${ELEMENT} 
+    Aciona elemento                              ${OPCAO}
+    ${OPCAO_SELECIONADA}    Get Element Attribute            ${OPCAO}    title
+    Set Suite Variable    ${NOME_OPCAO}
+
+######################################################
+##############     VALIDANDO ELEMENTOS    ############
+######################################################    
 Valida texto em tela
     [Arguments]    ${TEXTO}
     ${teste}    Run Keyword And Return Status    Wait Until Page Contains    ${TEXTO}    ${SMALL_TIMEOUT}
@@ -64,6 +92,9 @@ Valida elemento em tela
         Fail    ELEMENTO "${ELEMENTO}" NÃO FOI EXIBIDO EM ${SMALL_TIMEOUT} SEGUNDOS!!!
     END  
 
+######################################################
+##############      VALIDANDO ESTILOS     ############
+######################################################
 Valida menu selecionado
     [Arguments]    ${MENU}
     ${selecionado}    Execute Javascript    return window.getComputedStyle(document.querySelector(".c-juSleU > div:nth-of-type(${MENU})"), '::before').backgroundColor;
@@ -72,10 +103,6 @@ Valida menu selecionado
         Log To Console                           ...O MENU ${MENU} NÃO FOI SELECIONADO CORRETAMENTE!!!...
     END
     
-Tela "Em breve" é exibida
-    Log To Console                               ...Validando exibição da tela "Em breve"...
-    Valida texto em tela                         Em breve
-
 Valida fonte de texto 
     [Arguments]    ${selector}
     Log To Console                               ...Validando fonte do texto de descrição...
@@ -104,15 +131,3 @@ Valida cor de fundo
     Run Keyword And Continue On Failure          
     ...    Should Be Equal    ${backgroundColor}    ${cor}    msg=...COR DE FUNDO DIFERENTE DO PROTÓTIPO! PROTÓTIPO: ${cor}, COR ATUAL: ${backgroundColor}!!!...    values=False
 
-Digita texto
-    [Arguments]    ${ELEMENT}    ${TEXTO}
-    Log To Console                               ...Digitando o texto "${TEXTO}" no elemento: ${ELEMENT}...
-    Wait Until Element Is Visible                ${ELEMENT}               ${SMALL_TIMEOUT}
-    Input Text                                   ${ELEMENT}               ${TEXTO}
-
-Seleciona combobox
-    [Arguments]    ${ELEMENT}    ${OPCAO}    ${NOME_OPCAO}
-    Aciona elemento                              ${ELEMENT} 
-    Aciona elemento                              ${OPCAO}
-    ${OPCAO_SELECIONADA}    Get Element Attribute            ${OPCAO}    title
-    Set Suite Variable    ${NOME_OPCAO}
